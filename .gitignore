@@ -4,3 +4,8 @@ node_modules/
 **/.DS_Store
 # 3D source kept local; only the web-ready GLB is deployed
 assets/Mount_Fuji.fbx
+
+# dev-only / local tooling (not for the public repo)
+.claude/
+server.js
+assets/convert.py
