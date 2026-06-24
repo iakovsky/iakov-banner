@@ -15,17 +15,14 @@ html, body {
   justify-content: center;
 }
 
-/* Fixed 1280x832 stage, scaled to fit via scale.js */
-.stage {
-  position: relative;
-  width: 1280px;
-  height: 832px;
-  background: #fff;
+/* Full-viewport background layer (no letterboxing) */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
-  transform-origin: center center;
 }
 
-/* Background image — cover the stage */
 .bg {
   position: absolute;
   inset: 0;
@@ -34,6 +31,16 @@ html, body {
   object-fit: cover;
   pointer-events: none;
   user-select: none;
+}
+
+/* Fixed 1280x832 stage, scaled to fit via scale.js */
+.stage {
+  position: relative;
+  z-index: 1;
+  width: 1280px;
+  height: 832px;
+  background: transparent;
+  transform-origin: center center;
 }
 
 /* Subtle grain (Figma effect: GRAIN radius 4.5) */
@@ -65,9 +72,58 @@ html, body {
   width: 1026px;
   height: 551px;
   border-radius: 30px;
-  background: rgba(217, 217, 217, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* Slightly denser frosted fill + soft inner top highlight */
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0.10) 100%),
+    rgba(217, 217, 217, 0.32);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.10);
+  overflow: hidden;
+}
+
+/* Glass edge reflection — bright gradient border via mask */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.05) 60%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Soft diagonal sheen sweeping across the glass */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.12) 45%,
+    rgba(255, 255, 255, 0.02) 55%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
 /* Year "2026": right edge x=1154, vertical center y=771 */
