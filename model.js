@@ -30,7 +30,7 @@ let velocity = BASE_SPEED; // current angular velocity
 let angle = 0; // current orbit angle around the mountain
 let orbitR = 1; // camera distance from the axis
 let orbitH = 0; // camera height
-let lookY = 0; // vertical point the camera aims at
+const summit = new THREE.Vector3(); // peak position — kept centered in frame
 let ready = false;
 
 // --- Load model ---
@@ -68,13 +68,22 @@ loader.load(
     const center = box.getCenter(new THREE.Vector3());
     model.position.sub(center);
     scene.add(model);
+    model.updateMatrixWorld(true);
+
+    // Find the summit (highest vertex) in world space — this stays centered
+    const pos = (terrain || model).geometry.attributes.position;
+    const v = new THREE.Vector3();
+    summit.set(0, -Infinity, 0);
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4((terrain || model).matrixWorld);
+      if (v.y > summit.y) summit.copy(v);
+    }
 
     // Camera orbit framing (Y-up world: footprint is X/Z, height is Y)
     const horiz = Math.max(size.x, size.z);
     const fovRad = (camera.fov * Math.PI) / 180;
     orbitR = (horiz / 2 / Math.tan(fovRad / 2)) * 0.72; // closer to the mountain
     orbitH = orbitR * 0.36; // lower camera, ~20° above horizon (shallower angle)
-    lookY = size.y * 0.32; // aim toward the peak
     camera.near = orbitR / 100;
     camera.far = orbitR * 10;
     camera.updateProjectionMatrix();
@@ -116,9 +125,14 @@ function tick() {
   angle += velocity * dt;
 
   if (ready) {
-    // Orbit in the X/Z plane around the world Y (up) axis
-    camera.position.set(Math.sin(angle) * orbitR, orbitH, Math.cos(angle) * orbitR);
-    camera.lookAt(0, lookY, 0);
+    // Orbit around the summit's vertical axis, always aiming at the peak so it
+    // stays pinned to the centre of the panel while the mountain spins.
+    camera.position.set(
+      summit.x + Math.sin(angle) * orbitR,
+      orbitH,
+      summit.z + Math.cos(angle) * orbitR
+    );
+    camera.lookAt(summit);
   }
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
