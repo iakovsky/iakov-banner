@@ -31,6 +31,7 @@ let angle = 0; // current orbit angle around the mountain
 let orbitR = 1; // camera distance from the axis
 let orbitH = 0; // camera height
 let pitchDrop = 0; // aim below the crater to lift the peak up in frame
+let modelHoriz = 0; // horizontal extent of the mountain (set on load)
 const summit = new THREE.Vector3(); // crater centre — kept centered horizontally
 const lookTarget = new THREE.Vector3();
 let ready = false;
@@ -94,15 +95,8 @@ loader.load(
     }
     summit.set(sx / n, sy / n, sz / n);
 
-    // Camera orbit framing (Y-up world: footprint is X/Z, height is Y)
-    const horiz = Math.max(size.x, size.z);
-    const fovRad = (camera.fov * Math.PI) / 180;
-    orbitR = (horiz / 2 / Math.tan(fovRad / 2)) * 0.72; // closer to the mountain
-    orbitH = orbitR * 0.36; // lower camera, ~20° above horizon (shallower angle)
-    pitchDrop = orbitR * 0.16; // raise the peak toward the upper third of the panel
-    camera.near = orbitR / 100;
-    camera.far = orbitR * 10;
-    camera.updateProjectionMatrix();
+    // Store the horizontal extent; camera framing is (re)computed in frame()
+    modelHoriz = Math.max(size.x, size.z);
 
     ready = true;
     resize();
@@ -120,6 +114,21 @@ window.addEventListener(
   { passive: true }
 );
 
+// --- Framing: aspect-aware so a tall (portrait) panel zooms in enough that the
+// mountain base falls below the frame instead of revealing the flat tile edge ---
+function frame(w, h) {
+  if (!modelHoriz) return;
+  const portrait = h >= w;
+  const rFactor = portrait ? 0.46 : 0.72; // closer on mobile
+  const dropFactor = portrait ? 0.06 : 0.16;
+  const fovRad = (camera.fov * Math.PI) / 180;
+  orbitR = (modelHoriz / 2 / Math.tan(fovRad / 2)) * rFactor;
+  orbitH = orbitR * 0.36; // ~20° above horizon
+  pitchDrop = orbitR * dropFactor;
+  camera.near = orbitR / 100;
+  camera.far = orbitR * 10;
+}
+
 // --- Resize ---
 function resize() {
   const w = container.clientWidth;
@@ -127,6 +136,7 @@ function resize() {
   if (!w || !h) return;
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
+  frame(w, h);
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);

@@ -173,13 +173,14 @@ body.mobile .card {
   height: 551px;
 }
 
-/* 3D model sits as a band in the middle of the card (top 130, height 275) */
+/* 3D model starts mid-card and extends to the card's bottom edge, so the base
+   is only ever clipped by the card itself (never against empty glass). */
 body.mobile .model {
   top: 130px;
-  bottom: auto;
+  bottom: 0;
   left: 0;
   right: 0;
-  height: 275px;
+  height: auto;
 }
 
 /* Year "2026": right edge x=364, vertical center y=792 */
