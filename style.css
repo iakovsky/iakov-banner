@@ -155,3 +155,35 @@ html, body {
   text-align: right;
   filter: blur(1px);
 }
+
+/* ---------- Mobile portrait layout (stage 402x874) ---------- */
+/* Logo: centered, top 40, 242x89 */
+body.mobile .logo {
+  left: 80px;
+  top: 40px;
+  width: 242px;
+  height: 89px;
+}
+
+/* Glass card: left 38, top 169, 326x551 */
+body.mobile .card {
+  left: 38px;
+  top: 169px;
+  width: 326px;
+  height: 551px;
+}
+
+/* 3D model sits as a band in the middle of the card (top 130, height 275) */
+body.mobile .model {
+  top: 130px;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  height: 275px;
+}
+
+/* Year "2026": right edge x=364, vertical center y=792 */
+body.mobile .year {
+  left: 187px; /* 364 - 177 */
+  top: 771px; /* 792 - 21 */
+}
