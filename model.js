@@ -72,9 +72,9 @@ loader.load(
     // Camera orbit framing (Y-up world: footprint is X/Z, height is Y)
     const horiz = Math.max(size.x, size.z);
     const fovRad = (camera.fov * Math.PI) / 180;
-    orbitR = (horiz / 2 / Math.tan(fovRad / 2)) * 0.95;
-    orbitH = orbitR * 0.62; // height along +Y, ~32° above horizon
-    lookY = size.y * 0.15; // aim a bit above the base
+    orbitR = (horiz / 2 / Math.tan(fovRad / 2)) * 0.72; // closer to the mountain
+    orbitH = orbitR * 0.36; // lower camera, ~20° above horizon (shallower angle)
+    lookY = size.y * 0.32; // aim toward the peak
     camera.near = orbitR / 100;
     camera.far = orbitR * 10;
     camera.updateProjectionMatrix();
