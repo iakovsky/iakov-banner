@@ -19,12 +19,24 @@
       <img class="logo" src="assets/logo.svg" alt="iakov" />
 
       <!-- Glass card -->
-      <div class="card"></div>
+      <div class="card">
+        <div class="model" id="model"></div>
+      </div>
 
       <!-- Year -->
       <div class="year">2026</div>
     </div>
   </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
   <script src="scale.js"></script>
+  <script type="module" src="model.js"></script>
 </body>
 </html>

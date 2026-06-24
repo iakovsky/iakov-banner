@@ -83,6 +83,18 @@ html, body {
   overflow: hidden;
 }
 
+/* 3D model canvas fills the glass panel */
+.model {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.model canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* Glass edge reflection — bright gradient border via mask */
 .card::before {
   content: "";
