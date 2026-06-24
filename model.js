@@ -40,9 +40,8 @@ loader.load(
   "assets/mount_fuji.glb",
   (gltf) => {
     const model = gltf.scene;
-    // Loaded scene is Z-up (height along world Z) — stand it upright (Y-up).
-    model.rotation.x = -Math.PI / 2;
-    model.updateMatrixWorld(true);
+    // Loaded scene is Z-up (height along world Z). Instead of rotating the model,
+    // we orbit the camera about the world Z axis with up = +Z (see tick()).
 
     // Hide the enclosing base cube; keep only the terrain
     let terrain = null;
@@ -60,19 +59,22 @@ loader.load(
       }
     });
 
-    // Center the mountain at the origin
+    // Center the mountain at the origin.
+    // updateMatrixWorld is required before measuring, otherwise the box reports
+    // the raw (pre-node-transform) FBX scale instead of true world size.
+    model.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(terrain || model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     model.position.sub(center);
     scene.add(model);
 
-    // Camera orbit framing
+    // Camera orbit framing (Y-up world: footprint is X/Z, height is Y)
     const horiz = Math.max(size.x, size.z);
     const fovRad = (camera.fov * Math.PI) / 180;
     orbitR = (horiz / 2 / Math.tan(fovRad / 2)) * 0.95;
-    orbitH = orbitR * 0.62; // ~32° above horizon — peak always visible from above
-    lookY = size.y * 0.15;
+    orbitH = orbitR * 0.62; // height along +Y, ~32° above horizon
+    lookY = size.y * 0.15; // aim a bit above the base
     camera.near = orbitR / 100;
     camera.far = orbitR * 10;
     camera.updateProjectionMatrix();
@@ -114,6 +116,7 @@ function tick() {
   angle += velocity * dt;
 
   if (ready) {
+    // Orbit in the X/Z plane around the world Y (up) axis
     camera.position.set(Math.sin(angle) * orbitR, orbitH, Math.cos(angle) * orbitR);
     camera.lookAt(0, lookY, 0);
   }
