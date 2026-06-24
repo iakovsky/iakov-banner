@@ -30,7 +30,9 @@ let velocity = BASE_SPEED; // current angular velocity
 let angle = 0; // current orbit angle around the mountain
 let orbitR = 1; // camera distance from the axis
 let orbitH = 0; // camera height
-const summit = new THREE.Vector3(); // peak position — kept centered in frame
+let pitchDrop = 0; // aim below the crater to lift the peak up in frame
+const summit = new THREE.Vector3(); // crater centre — kept centered horizontally
+const lookTarget = new THREE.Vector3();
 let ready = false;
 
 // --- Load model ---
@@ -97,6 +99,7 @@ loader.load(
     const fovRad = (camera.fov * Math.PI) / 180;
     orbitR = (horiz / 2 / Math.tan(fovRad / 2)) * 0.72; // closer to the mountain
     orbitH = orbitR * 0.36; // lower camera, ~20° above horizon (shallower angle)
+    pitchDrop = orbitR * 0.16; // raise the peak toward the upper third of the panel
     camera.near = orbitR / 100;
     camera.far = orbitR * 10;
     camera.updateProjectionMatrix();
@@ -145,7 +148,8 @@ function tick() {
       orbitH,
       summit.z + Math.cos(angle) * orbitR
     );
-    camera.lookAt(summit);
+    lookTarget.set(summit.x, summit.y - pitchDrop, summit.z);
+    camera.lookAt(lookTarget);
   }
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
