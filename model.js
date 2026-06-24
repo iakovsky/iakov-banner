@@ -70,14 +70,27 @@ loader.load(
     scene.add(model);
     model.updateMatrixWorld(true);
 
-    // Find the summit (highest vertex) in world space — this stays centered
-    const pos = (terrain || model).geometry.attributes.position;
+    // Find the crater centre (жерло) in world space — this stays pinned to the
+    // panel centre. The highest vertex sits on the crater rim, so instead we take
+    // the centroid of the whole summit region (the rim ring around the crater).
+    const mesh = terrain || model;
+    const pos = mesh.geometry.attributes.position;
     const v = new THREE.Vector3();
-    summit.set(0, -Infinity, 0);
+
+    let maxY = -Infinity;
     for (let i = 0; i < pos.count; i++) {
-      v.fromBufferAttribute(pos, i).applyMatrix4((terrain || model).matrixWorld);
-      if (v.y > summit.y) summit.copy(v);
+      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+      if (v.y > maxY) maxY = v.y;
     }
+    const rimThreshold = maxY - size.y * 0.04; // top sliver = the crater rim
+    let sx = 0, sy = 0, sz = 0, n = 0;
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+      if (v.y >= rimThreshold) {
+        sx += v.x; sy += v.y; sz += v.z; n++;
+      }
+    }
+    summit.set(sx / n, sy / n, sz / n);
 
     // Camera orbit framing (Y-up world: footprint is X/Z, height is Y)
     const horiz = Math.max(size.x, size.z);
