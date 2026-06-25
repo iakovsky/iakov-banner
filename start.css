@@ -107,7 +107,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4d4d4d;
+  color: #e9e9e9;
 }
 
 /* ---- Widgets ---- */
@@ -151,15 +151,20 @@ html, body {
 
 .stage[data-weather="sunny"] .wx-sunny { display: block; }
 .wx-sunny {
-  left: 420px;
+  left: 645px;
   top: 246px;
-  width: 729px;
-  height: 410px;
+  width: 504px;
+  height: 265px;
+  border-radius: 30px;
+  overflow: hidden; /* keep the rays inside the widget */
 }
 .wx-sunny img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 144.6%; /* zoomed like the mockup (729 over 504) */
+  height: auto;
+  transform: scaleX(-1); /* mirror so the light source sits top-right */
   mix-blend-mode: plus-lighter;
 }
 
