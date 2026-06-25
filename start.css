@@ -1,0 +1,203 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+.viewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Full-viewport background */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Fixed 1280x832 stage, scaled to fit (see start.js) */
+.stage {
+  position: relative;
+  z-index: 1;
+  width: 1280px;
+  height: 832px;
+  background: transparent;
+  transform-origin: center center;
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Logo */
+.logo {
+  position: absolute;
+  left: 519px;
+  top: 40px;
+  width: 242px;
+  height: 89px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---- Shared frosted glass ---- */
+.search-input,
+.search-btn,
+.widget {
+  background: rgba(217, 217, 217, 0.2);
+  border-radius: 30px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.18),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+/* ---- Search ---- */
+.search {
+  position: absolute;
+  left: 127px;
+  top: 169px;
+  width: 1022px; /* input 949 + gap 15 + button 58 */
+  height: 57px;
+  display: flex;
+  gap: 15px;
+}
+.search-input {
+  flex: 1;
+  height: 57px;
+  border: none;
+  outline: none;
+  padding: 0 24px;
+  font-size: 17px;
+  letter-spacing: -0.08px;
+  color: #e9e9e9;
+}
+.search-input::placeholder {
+  color: #e9e9e9;
+  opacity: 1;
+}
+.search-btn {
+  width: 58px;
+  height: 57px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4d4d4d;
+}
+
+/* ---- Widgets ---- */
+.widget.temp {
+  position: absolute;
+  left: 127px;
+  top: 246px;
+  width: 504px;
+  height: 265px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.temp-value {
+  font-weight: 700;
+  font-size: 128px;
+  line-height: 1;
+  letter-spacing: -0.08px;
+  color: #e9e9e9;
+}
+
+.widget.weather {
+  position: absolute;
+  left: 645px;
+  top: 246px;
+  width: 504px;
+  height: 265px;
+}
+
+/* ---- Weather visuals (one shown per [data-weather]) ---- */
+.wx { display: none; position: absolute; pointer-events: none; }
+
+.stage[data-weather="cloudy"] .wx-cloudy { display: block; }
+.wx-cloudy {
+  left: 591px;
+  top: 169px;
+  width: 612px;
+  height: 397px;
+}
+.wx-cloudy { object-fit: cover; }
+
+.stage[data-weather="sunny"] .wx-sunny { display: block; }
+.wx-sunny {
+  left: 420px;
+  top: 246px;
+  width: 729px;
+  height: 410px;
+}
+.wx-sunny img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: plus-lighter;
+}
+
+.stage[data-weather="rainy"] .wx-rainy { display: block; }
+.wx-rainy {
+  left: 645px;
+  top: 246px;
+  width: 504px;
+  height: 265px;
+  border-radius: 30px;
+  overflow: hidden;
+}
+.wx-rainy img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 190.19%;
+  object-fit: cover;
+  mix-blend-mode: plus-lighter;
+}
+
+/* ---- Year ---- */
+.year {
+  position: absolute;
+  width: 177px;
+  height: 42px;
+  left: 977px;
+  top: 750px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-family: "Neue Haas Grotesk Display Pro", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -3.2px;
+  color: #fff;
+  text-align: right;
+  filter: blur(1px);
+}
